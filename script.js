@@ -69,6 +69,21 @@ function toDate(value) {
   return new Date(`${value}T00:00:00`);
 }
 
+function getBpoBadgeVariant(shipDate, bpoDate) {
+  const MS_PER_DAY = 24 * 60 * 60 * 1000;
+  const daysBeforeShip = Math.round((shipDate - bpoDate) / MS_PER_DAY);
+
+  if (daysBeforeShip <= 5) {
+    return "badge--danger";
+  }
+
+  if (daysBeforeShip <= 7) {
+    return "badge--warning";
+  }
+
+  return "badge--success";
+}
+
 function renderFilters() {
   filtersContainer.innerHTML = "";
 
@@ -114,7 +129,7 @@ function renderTable() {
     .map((order) => {
       const shipDate = toDate(order.shipDate);
       const bpoDate = toDate(order.bpoDateNeeded);
-      const isLateBpo = bpoDate > shipDate;
+      const bpoBadgeVariant = getBpoBadgeVariant(shipDate, bpoDate);
 
       return `
         <tr>
@@ -126,7 +141,7 @@ function renderTable() {
           <td>${order.factory}</td>
           <td>${fmtDate.format(shipDate)}</td>
           <td>
-            <span class="badge ${isLateBpo ? "badge--danger" : ""}">
+            <span class="badge ${bpoBadgeVariant}">
               ${fmtDate.format(bpoDate)}
             </span>
           </td>

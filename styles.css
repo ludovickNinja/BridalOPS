@@ -8,6 +8,8 @@
   --chip-selected: #0071e3;
   --chip-selected-text: #ffffff;
   --danger: #c62828;
+  --warning: #9a6a00;
+  --success: #2e7d32;
   --shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
 }
 
@@ -154,6 +156,18 @@ tbody tr:hover {
   color: var(--danger);
   border-color: #f2b5b5;
   background: #fff1f1;
+}
+
+.badge--warning {
+  color: var(--warning);
+  border-color: #f1dc9b;
+  background: #fff9e6;
+}
+
+.badge--success {
+  color: var(--success);
+  border-color: #b6dfb9;
+  background: #effaf0;
 }
 
 .empty-state {

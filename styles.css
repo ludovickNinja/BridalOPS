@@ -54,6 +54,12 @@ body {
   padding: 18px;
 }
 
+.filter-group + .filter-group {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #ececf0;
+}
+
 .filter-panel__title-row {
   display: flex;
   justify-content: space-between;

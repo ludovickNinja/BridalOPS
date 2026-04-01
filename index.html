@@ -11,16 +11,26 @@
       <header class="page-header">
         <h1>Factory Orders</h1>
         <p>
-          View and filter orders by factory, sorted by ship date.
+          View and filter orders by factory and order profile, sorted by ship date.
         </p>
       </header>
 
-      <section class="filter-panel" aria-label="Factory Filters">
-        <div class="filter-panel__title-row">
-          <h2>Factories</h2>
-          <button id="toggle-all" class="ghost-button" type="button">Select All</button>
+      <section class="filter-panel" aria-label="Order Filters">
+        <div class="filter-group">
+          <div class="filter-panel__title-row">
+            <h2>Factories</h2>
+            <button id="toggle-all-factories" class="ghost-button" type="button">Clear All</button>
+          </div>
+          <div id="factory-filters" class="chip-list" role="group" aria-label="Factory Options"></div>
         </div>
-        <div id="factory-filters" class="chip-list" role="group" aria-label="Factory Options"></div>
+
+        <div class="filter-group">
+          <div class="filter-panel__title-row">
+            <h2>Order Profiles</h2>
+            <button id="toggle-all-profiles" class="ghost-button" type="button">Clear All</button>
+          </div>
+          <div id="order-profile-filters" class="chip-list" role="group" aria-label="Order Profile Options"></div>
+        </div>
       </section>
 
       <section class="table-panel" aria-label="Factory Orders Table">
@@ -34,6 +44,7 @@
                 <th>Color</th>
                 <th>Setting Center Stone</th>
                 <th>Factory</th>
+                <th>Order Profile</th>
                 <th>Ship Date</th>
                 <th>BPO Date Needed</th>
               </tr>

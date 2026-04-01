@@ -27,6 +27,9 @@ const factoryFiltersContainer = document.getElementById("factory-filters");
 const orderProfileFiltersContainer = document.getElementById("order-profile-filters");
 const toggleAllFactoriesButton = document.getElementById("toggle-all-factories");
 const toggleAllProfilesButton = document.getElementById("toggle-all-profiles");
+const clearDateRangeButton = document.getElementById("clear-date-range");
+const shipDateStartInput = document.getElementById("ship-date-start");
+const shipDateEndInput = document.getElementById("ship-date-end");
 const tableBody = document.getElementById("orders-table-body");
 
 const fmtDate = new Intl.DateTimeFormat("en-US", {
@@ -116,9 +119,25 @@ function setAllFilters(selectedSet, options, shouldSelectAll) {
 }
 
 function renderTable() {
+  const startDate = shipDateStartInput.value ? toDate(shipDateStartInput.value) : null;
+  const endDate = shipDateEndInput.value ? toDate(shipDateEndInput.value) : null;
+
   const filteredOrders = orders
     .filter((order) => selectedFactories.has(order.factory))
     .filter((order) => selectedOrderProfiles.has(order.orderProfile))
+    .filter((order) => {
+      const shipDate = toDate(order.shipDate);
+
+      if (startDate && shipDate < startDate) {
+        return false;
+      }
+
+      if (endDate && shipDate > endDate) {
+        return false;
+      }
+
+      return true;
+    })
     .sort((a, b) => toDate(a.shipDate) - toDate(b.shipDate));
 
   if (filteredOrders.length === 0) {
@@ -181,6 +200,15 @@ toggleAllProfilesButton.addEventListener("click", () => {
   setAllFilters(selectedOrderProfiles, ORDER_PROFILES, shouldSelectAll);
   updateToggleAllLabel(toggleAllProfilesButton, selectedOrderProfiles, ORDER_PROFILES);
   renderOrderProfileFilters();
+  renderTable();
+});
+
+shipDateStartInput.addEventListener("change", renderTable);
+shipDateEndInput.addEventListener("change", renderTable);
+
+clearDateRangeButton.addEventListener("click", () => {
+  shipDateStartInput.value = "";
+  shipDateEndInput.value = "";
   renderTable();
 });
 

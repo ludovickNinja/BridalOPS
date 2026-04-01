@@ -18,63 +18,7 @@ const ORDER_PROFILES = [
   "Marketing"
 ];
 
-const orders = [
-  {
-    uid: "A10041",
-    sku: "BR-4471",
-    karat: "14K",
-    color: "Yellow",
-    settingCenterStone: "Yes",
-    factory: "Factory 1",
-    orderProfile: "Re-Order",
-    shipDate: "2026-04-02",
-    bpoDateNeeded: "2026-03-31"
-  },
-  {
-    uid: "A10033",
-    sku: "ER-2120",
-    karat: "18K",
-    color: "White",
-    settingCenterStone: "Provide and Set",
-    factory: "In House",
-    orderProfile: "Repair",
-    shipDate: "2026-04-01",
-    bpoDateNeeded: "2026-04-03"
-  },
-  {
-    uid: "A10058",
-    sku: "BR-9908",
-    karat: "14K",
-    color: "Rose",
-    settingCenterStone: "No",
-    factory: "Factory 3",
-    orderProfile: "Stock Replenishment",
-    shipDate: "2026-04-04",
-    bpoDateNeeded: "2026-03-29"
-  },
-  {
-    uid: "A10039",
-    sku: "NE-8882",
-    karat: "10K",
-    color: "White",
-    settingCenterStone: "Yes",
-    factory: "Factory 2",
-    orderProfile: "Memo - Short Term",
-    shipDate: "2026-04-03",
-    bpoDateNeeded: "2026-04-02"
-  },
-  {
-    uid: "A10065",
-    sku: "ER-5548",
-    karat: "18K",
-    color: "Yellow",
-    settingCenterStone: "Provide and Set",
-    factory: "Factory 1",
-    orderProfile: "Marketing",
-    shipDate: "2026-04-05",
-    bpoDateNeeded: "2026-04-04"
-  }
-];
+let orders = [];
 
 const selectedFactories = new Set(FACTORIES);
 const selectedOrderProfiles = new Set(ORDER_PROFILES);
@@ -240,8 +184,33 @@ toggleAllProfilesButton.addEventListener("click", () => {
   renderTable();
 });
 
-updateToggleAllLabel(toggleAllFactoriesButton, selectedFactories, FACTORIES);
-updateToggleAllLabel(toggleAllProfilesButton, selectedOrderProfiles, ORDER_PROFILES);
-renderFactoryFilters();
-renderOrderProfileFilters();
-renderTable();
+async function loadOrders() {
+  try {
+    const response = await fetch("./orders.json");
+
+    if (!response.ok) {
+      throw new Error(`Failed to load orders: ${response.status}`);
+    }
+
+    orders = await response.json();
+    return true;
+  } catch (error) {
+    console.error(error);
+    tableBody.innerHTML = '<tr><td colspan="9" class="empty-state">Unable to load orders data.</td></tr>';
+    return false;
+  }
+}
+
+async function initializeApp() {
+  updateToggleAllLabel(toggleAllFactoriesButton, selectedFactories, FACTORIES);
+  updateToggleAllLabel(toggleAllProfilesButton, selectedOrderProfiles, ORDER_PROFILES);
+  renderFactoryFilters();
+  renderOrderProfileFilters();
+  const hasLoadedOrders = await loadOrders();
+
+  if (hasLoadedOrders) {
+    renderTable();
+  }
+}
+
+initializeApp();

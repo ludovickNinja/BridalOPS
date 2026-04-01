@@ -149,6 +149,21 @@ tbody tr:hover {
   background: #f9fbff;
 }
 
+.ship-date-divider-row:hover {
+  background: transparent;
+}
+
+.ship-date-divider {
+  text-align: center;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: #f7f8fb;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 12px;
+}
+
 .badge {
   display: inline-block;
   border-radius: 999px;

@@ -182,13 +182,28 @@ function renderTable() {
     return;
   }
 
+  let lastShipDate = null;
+
   tableBody.innerHTML = filteredOrders
     .map((order) => {
       const shipDate = toDate(order.shipDate);
       const bpoDate = toDate(order.bpoDateNeeded);
       const bpoBadgeVariant = getBpoBadgeVariant(shipDate, bpoDate);
+      const isNewShipDateGroup = order.shipDate !== lastShipDate;
+      lastShipDate = order.shipDate;
+
+      const dateGroupDivider = isNewShipDateGroup
+        ? `
+        <tr class="ship-date-divider-row">
+          <td colspan="9" class="ship-date-divider">
+            ${fmtDate.format(shipDate)}
+          </td>
+        </tr>
+      `
+        : "";
 
       return `
+        ${dateGroupDivider}
         <tr>
           <td>${order.uid}</td>
           <td>${order.sku}</td>

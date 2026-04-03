@@ -50,6 +50,12 @@ body {
   box-shadow: var(--shadow);
 }
 
+.table-panel__header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 16px 0;
+}
+
 .filter-panel {
   padding: 18px;
 }

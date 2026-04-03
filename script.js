@@ -31,6 +31,7 @@ const clearDateRangeButton = document.getElementById("clear-date-range");
 const shipDateStartInput = document.getElementById("ship-date-start");
 const shipDateEndInput = document.getElementById("ship-date-end");
 const tableBody = document.getElementById("orders-table-body");
+const exportExcelButton = document.getElementById("export-excel");
 
 const fmtDate = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -118,11 +119,11 @@ function setAllFilters(selectedSet, options, shouldSelectAll) {
   selectedSet.clear();
 }
 
-function renderTable() {
+function getFilteredOrders() {
   const startDate = shipDateStartInput.value ? toDate(shipDateStartInput.value) : null;
   const endDate = shipDateEndInput.value ? toDate(shipDateEndInput.value) : null;
 
-  const filteredOrders = orders
+  return orders
     .filter((order) => selectedFactories.has(order.factory))
     .filter((order) => selectedOrderProfiles.has(order.orderProfile))
     .filter((order) => {
@@ -139,6 +140,10 @@ function renderTable() {
       return true;
     })
     .sort((a, b) => toDate(a.shipDate) - toDate(b.shipDate));
+}
+
+function renderTable() {
+  const filteredOrders = getFilteredOrders();
 
   if (filteredOrders.length === 0) {
     tableBody.innerHTML = '<tr><td colspan="9" class="empty-state">No orders match the selected filters.</td></tr>';
@@ -187,6 +192,58 @@ function renderTable() {
     .join("");
 }
 
+function exportFilteredOrdersToExcel() {
+  const filteredOrders = getFilteredOrders();
+
+  if (filteredOrders.length === 0) {
+    return;
+  }
+
+  const headers = [
+    "UID",
+    "SKU",
+    "Karat",
+    "Color",
+    "Setting Center Stone",
+    "Factory",
+    "Order Profile",
+    "Ship Date",
+    "BPO Date Needed"
+  ];
+
+  const csvRows = [
+    headers.join(","),
+    ...filteredOrders.map((order) => {
+      const row = [
+        order.uid,
+        order.sku,
+        order.karat,
+        order.color,
+        order.settingCenterStone,
+        order.factory,
+        order.orderProfile,
+        fmtDate.format(toDate(order.shipDate)),
+        fmtDate.format(toDate(order.bpoDateNeeded))
+      ];
+
+      return row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(",");
+    })
+  ];
+
+  const csvContent = `\uFEFF${csvRows.join("\n")}`;
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  const dateStamp = new Date().toISOString().slice(0, 10);
+
+  link.href = url;
+  link.download = `factory-orders-${dateStamp}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 toggleAllFactoriesButton.addEventListener("click", () => {
   const shouldSelectAll = selectedFactories.size !== FACTORIES.length;
   setAllFilters(selectedFactories, FACTORIES, shouldSelectAll);
@@ -211,6 +268,7 @@ clearDateRangeButton.addEventListener("click", () => {
   shipDateEndInput.value = "";
   renderTable();
 });
+exportExcelButton.addEventListener("click", exportFilteredOrdersToExcel);
 
 async function loadOrders() {
   try {
